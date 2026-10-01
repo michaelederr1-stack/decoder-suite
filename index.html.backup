@@ -1,0 +1,1006 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Traversal Decoder & Multi-Encoder Suite</title>
+  <style>
+    :root {
+      --bg: #0b0f19; --panel: #131b2e; --accent: #00f2fe; --secondary: #4facfe;
+      --text: #e2e8f0; --text-muted: #94a3b8; --border: #1e293b; --card-bg: #0f172a;
+    }
+    * { box-sizing: border-box; transition: all 0.2s ease; }
+    body { font-family: "Segoe UI", system-ui, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 30px; }
+    .header { max-width: 1200px; margin: 0 auto 30px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 20px; }
+    .header h1 { margin: 0; font-size: 1.8rem; background: linear-gradient(135deg, var(--accent), var(--secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .container { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 360px 1fr; gap: 25px; }
+    .panel { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 24px; }
+    .full-width { grid-column: 1 / -1; }
+    h2 { color: #fff; font-size: 1.1rem; margin-top: 0; margin-bottom: 20px; }
+    label { display: block; margin: 14px 0 6px; font-weight: 600; font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; }
+    input, select { width: 100%; padding: 12px; background: var(--card-bg); color: #fff; border: 1px solid var(--border); border-radius: 8px; outline: none; }
+    .btn-group { display: flex; flex-direction: column; gap: 10px; margin-top: 24px; }
+    button { background: linear-gradient(135deg, var(--accent), var(--secondary)); color: #0b0f19; font-weight: 700; padding: 12px; border: none; border-radius: 8px; cursor: pointer; }
+    button:hover { opacity: 0.9; }
+    button.secondary { background: var(--card-bg); color: var(--text); border: 1px solid var(--border); }
+    .meta-pills { display: flex; gap: 12px; margin-bottom: 15px; }
+    .pill { background: var(--card-bg); border: 1px solid var(--border); padding: 8px 14px; border-radius: 20px; font-size: 0.85rem; color: var(--text-muted); }
+    .pill strong { color: var(--accent); }
+    pre { 
+      background: var(--card-bg); 
+      padding: 16px; 
+      border-radius: 8px; 
+      color: var(--accent); 
+      border: 1px solid var(--border); 
+      font-family: monospace; 
+      line-height: 1.6; 
+      margin: 0; 
+      white-space: pre-wrap;
+      word-break: break-word;
+      max-height: 320px;
+      overflow-y: auto;
+    }
+    .grid-encoders { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; }
+    .encoder-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; padding: 16px; }
+  </style>
+
+<style>
+  /* Animated Galaxy Background */
+  body {
+    background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%) !important;
+    color: #e0e6ed !important;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    min-height: 100vh;
+    margin: 0;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: "";
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background-image: 
+      radial-gradient(2px 2px at 20px 30px, #ffffff, rgba(0,0,0,0)),
+      radial-gradient(2px 2px at 40px 70px, #00f2fe, rgba(0,0,0,0)),
+      radial-gradient(1px 1px at 90px 40px, #fff, rgba(0,0,0,0)),
+      radial-gradient(2px 2px at 160px 120px, #9b51e0, rgba(0,0,0,0));
+    background-repeat: repeat;
+    background-size: 200px 200px;
+    opacity: 0.3;
+    z-index: -1;
+    pointer-events: none;
+  }
+
+  /* 3D Glassmorphism Panel Effect */
+  .panel, .encoder-card, .card {
+    background: rgba(16, 22, 36, 0.75) !important;
+    backdrop-filter: blur(12px) !important;
+    border: 1px solid rgba(0, 242, 254, 0.15) !important;
+    border-radius: 12px !important;
+    box-shadow: 
+      0 10px 30px rgba(0, 0, 0, 0.5),
+      inset 0 1px 1px rgba(255, 255, 255, 0.1),
+      inset 0 -2px 5px rgba(0, 242, 254, 0.05) !important;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+  }
+
+  .panel:hover, .encoder-card:hover {
+    transform: translateY(-3px) scale(1.002);
+    box-shadow: 
+      0 15px 35px rgba(0, 242, 254, 0.15),
+      inset 0 1px 1px rgba(255, 255, 255, 0.2) !important;
+  }
+
+  /* Neat, Presentable Tables */
+  table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin: 12px 0;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  th {
+    background: rgba(0, 242, 254, 0.15) !important;
+    color: #00f2fe !important;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    letter-spacing: 0.8px;
+    padding: 12px 14px;
+    text-align: left;
+    border-bottom: 1px solid rgba(0, 242, 254, 0.2);
+  }
+
+  td {
+    padding: 10px 14px;
+    background: rgba(10, 15, 26, 0.4);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    font-size: 0.9rem;
+    color: #c0c9d6;
+  }
+
+  tr:last-child td {
+    border-bottom: none;
+  }
+
+  tr:hover td {
+    background: rgba(0, 242, 254, 0.05) !important;
+  }
+
+  /* Compact 3D Buttons */
+  button {
+    background: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%) !important;
+    color: #050b14 !important;
+    font-weight: 700 !important;
+    border: none !important;
+    border-radius: 6px !important;
+    padding: 8px 16px !important;
+    box-shadow: 0 4px 15px rgba(0, 242, 254, 0.3) !important;
+    cursor: pointer;
+    transition: all 0.2s ease !important;
+  }
+
+  button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 242, 254, 0.5) !important;
+  }
+
+  /* Fix cyan block button stretching */
+  div[style*="background: var(--accent-color"], button[onclick="exportAllToCSV()"] {
+    width: auto !important;
+    display: inline-block !important;
+  }
+</style>
+
+
+<style>
+  /* Base Layout Constraints & Flex Box Scaling */
+  html, body {
+    width: 100%;
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  *, *:before, *:after {
+    box-sizing: inherit;
+  }
+
+  /* Main Container Fluidity */
+  .container, body > div {
+    max-width: 1600px !important;
+    width: 95% !important;
+    margin: 0 auto !important;
+    padding: 20px 10px !important;
+  }
+
+  /* Flexible Grid Layouts for Cards and Panels */
+  .grid-encoders, .panel-grid, div[style*="display: flex"] {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)) !important;
+    gap: 20px !important;
+    width: 100% !important;
+  }
+
+  /* Prevent Panel Overflow */
+  .panel, .encoder-card, .card {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    overflow-x: auto !important; /* Allow internal scrolling if content exceeds card width */
+    padding: 20px !important;
+  }
+
+  /* Scalable Form Controls */
+  input, select, textarea, button {
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  textarea {
+    width: 100% !important;
+    min-height: 90px;
+    resize: vertical;
+  }
+
+  /* Scalable & Scrollable Tables */
+  .table-container, table {
+    width: 100% !important;
+    display: block !important;
+    overflow-x: auto !important; /* Horizontal scrollbar on small screens instead of crushing content */
+    white-space: nowrap;
+  }
+
+  th, td {
+    padding: 12px 18px !important; /* Spaced out columns */
+  }
+
+  /* Media Query Adjustments for High-Res / Desktop Displays */
+  @media (min-width: 1200px) {
+    .full-width {
+      grid-column: 1 / -1 !important;
+    }
+  }
+</style>
+
+
+<style>
+  /* Flash-inspired Sleek Top Navigation Bar */
+  .nav-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+    border-bottom: 2px solid rgba(0, 242, 254, 0.2);
+    padding-bottom: 10px;
+    overflow-x: auto;
+  }
+
+  .nav-btn {
+    background: rgba(16, 22, 36, 0.6) !important;
+    color: #8a99ad !important;
+    border: 1px solid rgba(0, 242, 254, 0.1) !important;
+    border-radius: 8px 8px 0 0 !important;
+    padding: 10px 20px !important;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease !important;
+    box-shadow: none !important;
+  }
+
+  .nav-btn:hover {
+    color: #ffffff !important;
+    background: rgba(0, 242, 254, 0.1) !important;
+    transform: translateY(-2px);
+  }
+
+  .nav-btn.active {
+    background: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%) !important;
+    color: #050b14 !important;
+    border-color: #00f2fe !important;
+    box-shadow: 0 4px 15px rgba(0, 242, 254, 0.4) !important;
+  }
+
+  /* Page Views Management */
+  .tab-page {
+    display: none;
+    animation: fadeIn 0.3s ease-in-out;
+  }
+
+  .tab-page.active {
+    display: block;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+</style>
+
+
+<style>
+  .nav-tabs {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 10px !important;
+    margin-bottom: 20px !important;
+    border-bottom: 2px solid rgba(0, 242, 254, 0.3) !important;
+    padding-bottom: 12px !important;
+  }
+
+  .nav-btn {
+    background: rgba(16, 22, 36, 0.7) !important;
+    color: #8a99ad !important;
+    border: 1px solid rgba(0, 242, 254, 0.2) !important;
+    border-radius: 8px !important;
+    padding: 10px 20px !important;
+    font-size: 0.95rem !important;
+    font-weight: 600 !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease-in-out !important;
+  }
+
+  .nav-btn:hover {
+    color: #ffffff !important;
+    background: rgba(0, 242, 254, 0.15) !important;
+    border-color: #00f2fe !important;
+  }
+
+  .nav-btn.active {
+    background: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%) !important;
+    color: #050b14 !important;
+    border-color: #00f2fe !important;
+    box-shadow: 0 4px 15px rgba(0, 242, 254, 0.4) !important;
+  }
+
+  .tab-page {
+    display: none;
+  }
+
+  .tab-page.active {
+    display: block !important;
+  }
+</style>
+
+  
+
+
+
+<script>
+    // Tab Switching Engine for top buttons
+    function switchPage(pageId, btnElement) {
+      document.querySelectorAll('.tab-page').forEach(page => {
+        page.classList.remove('active');
+        page.style.display = 'none';
+      });
+
+      document.querySelectorAll('.nav-btn').forEach(btn => {
+        btn.classList.remove('active');
+      });
+
+      const targetPage = document.getElementById(pageId);
+      if (targetPage) {
+        targetPage.classList.add('active');
+        targetPage.style.display = 'block';
+      }
+
+      if (btnElement) {
+        btnElement.classList.add('active');
+      }
+    }
+
+    // Process Top Cipher Blocks
+    function processCipherBlocks() {
+      const inputElem = document.getElementById('blockInput');
+      const rawText = inputElem ? inputElem.value : '';
+      const format = document.getElementById('baseFormat')?.value || 'alpha';
+      const groupSize = parseInt(document.getElementById('groupSize')?.value, 10) || 5;
+      const uppercaseOnly = document.getElementById('uppercaseOnly')?.checked ?? true;
+      const alphaOnly = document.getElementById('alphaOnly')?.checked ?? true;
+
+      const outElem = document.getElementById('blockOutput');
+      const statsElem = document.getElementById('blockStats');
+
+      if (!rawText || !rawText.trim()) {
+        if (outElem) outElem.innerText = 'Awaiting input...';
+        if (statsElem) statsElem.innerText = 'Length: 0 symbols | Groups: 0';
+        return;
+      }
+
+      let processed = '';
+      if (format === 'binary') {
+        processed = Array.from(rawText).map(c => c.charCodeAt(0).toString(2).padStart(8, '0')).join('');
+      } else if (format === 'hex') {
+        processed = Array.from(rawText).map(c => c.charCodeAt(0).toString(16).padStart(2, '0')).join('');
+      } else if (format === 'octal') {
+        processed = Array.from(rawText).map(c => c.charCodeAt(0).toString(8).padStart(3, '0')).join('');
+      } else {
+        processed = rawText;
+        if (alphaOnly) processed = processed.replace(/[^a-zA-Z0-9]/g, '');
+      }
+
+      if (uppercaseOnly && format !== 'binary' && format !== 'octal') {
+        processed = processed.toUpperCase();
+      }
+
+      const regex = new RegExp('.{1,' + groupSize + '}', 'g');
+      const groups = processed.match(regex) || [];
+
+      if (outElem) outElem.innerText = groups.join(' ') || 'No matching characters.';
+      if (statsElem) statsElem.innerText = `Total Symbols: ${processed.length} | Block Count: ${groups.length} (Size: ${groupSize})`;
+    }
+
+    // Phonetic Conversion
+    const kanaMap = {
+      'ka':'カ','ki':'キ','ku':'ク','ke':'ケ','ko':'コ','sa':'サ','shi':'シ','su':'ス','se':'セ','so':'ソ',
+      'ta':'タ','chi':'チ','tsu':'ツ','te':'テ','to':'ト','na':'ナ','ni':'ニ','nu':'ヌ','ne':'ネ','no':'ノ',
+      'ha':'ハ','hi':'ヒ','fu':'フ','he':'ヘ','ho':'ホ','ma':'マ','mi':'ミ','mu':'ム','me':'メ','mo':'モ',
+      'ya':'ヤ','yu':'ユ','yo':'ヨ','ra':'ラ','ri':'リ','ru':'ル','re':'レ','ro':'ロ','wa':'ワ','wo':'ヲ',
+      'a':'ア','i':'イ','u':'ウ','e':'エ','o':'オ','n':'ン'
+    };
+
+    function transliterateToKana(str) {
+      let text = str.toLowerCase(), result = '', i = 0;
+      while (i < text.length) {
+        if (i + 3 <= text.length && kanaMap[text.slice(i, i + 3)]) { result += kanaMap[text.slice(i, i + 3)]; i += 3; }
+        else if (i + 2 <= text.length && kanaMap[text.slice(i, i + 2)]) { result += kanaMap[text.slice(i, i + 2)]; i += 2; }
+        else if (kanaMap[text[i]]) { result += kanaMap[text[i]]; i += 1; }
+        else { result += text[i]; i += 1; }
+      }
+      return result;
+    }
+
+    // Process Bottom Transposition Engine
+    function transposeVertical() {
+      const input = document.getElementById('vertInput')?.value || '';
+      const mode = document.getElementById('vertMode')?.value || 'raw';
+      const dir = document.getElementById('vertDirection')?.value || 'rtl';
+      const outputElem = document.getElementById('vertOutputCSS');
+
+      if (!outputElem) return;
+      if (!input || !input.trim()) {
+        outputElem.innerText = '縦書きテキストプレビュー (Awaiting input...)';
+        return;
+      }
+
+      outputElem.style.writingMode = dir === 'rtl' ? 'vertical-rl' : 'vertical-lr';
+      outputElem.innerText = mode === 'kana' ? transliterateToKana(input) : input;
+    }
+
+    // Event listeners
+    document.addEventListener("DOMContentLoaded", function() {
+      document.querySelectorAll('input, select, textarea').forEach(elem => {
+        elem.addEventListener('input', () => { processCipherBlocks(); transposeVertical(); });
+        elem.addEventListener('change', () => { processCipherBlocks(); transposeVertical(); });
+      });
+
+      processCipherBlocks();
+      transposeVertical();
+    });
+</script>
+
+
+
+
+
+<style>
+  /* Dark Mode Input & Textarea Standardization */
+  textarea, input[type="text"], input[type="number"], select {
+    background: #0a0f1a !important;
+    color: #00f2fe !important;
+    border: 1px solid rgba(0, 242, 254, 0.3) !important;
+    border-radius: 6px !important;
+    padding: 10px !important;
+    font-family: inherit;
+  }
+
+  textarea::placeholder {
+    color: #4a5a6e !important;
+  }
+
+  /* Clean Vertical Text Layout */
+  #vertOutputCSS {
+    writing-mode: vertical-rl !important;
+    text-orientation: upright !important;
+    letter-spacing: 2px !important;
+    line-height: 2 !important;
+    font-family: 'Hiragino Mincho ProN', 'Yu Mincho', 'Noto Serif CJK JP', serif;
+    font-size: 1.1rem;
+    background: #050b14 !important;
+    padding: 20px !important;
+    border-radius: 8px !important;
+    border: 1px solid rgba(0, 242, 254, 0.2) !important;
+    min-height: 200px;
+    max-height: 350px;
+    overflow-x: auto !important;
+    display: inline-block;
+  }
+
+  /* Align Checkboxes neatly */
+  .checkbox-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 10px;
+    color: #8a99ad;
+    font-size: 0.85rem;
+  }
+</style>
+
+
+<style>
+  /* Standard Dark Mode Styling for Form Inputs */
+  #page-blocks textarea, 
+  #page-blocks input[type="text"], 
+  #page-blocks input[type="number"], 
+  #page-blocks select {
+    background-color: #0a0f1a !important;
+    color: #00f2fe !important;
+    border: 1px solid rgba(0, 242, 254, 0.3) !important;
+    border-radius: 6px !important;
+    padding: 10px !important;
+    font-family: monospace, sans-serif !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Output Display Box */
+  #blockOutput {
+    background: #050b14 !important;
+    border: 1px solid rgba(0, 242, 254, 0.2) !important;
+    border-radius: 6px !important;
+    padding: 12px !important;
+    color: #50fa7b !important;
+    font-family: monospace !important;
+    white-space: pre-wrap !important;
+    word-break: break-all !important;
+    min-height: 80px;
+  }
+
+  /* Vertical CJK Writing Mode Output Container */
+  #vertOutputContainer {
+    background: #050b14 !important;
+    border: 1px solid rgba(0, 242, 254, 0.2) !important;
+    border-radius: 6px !important;
+    padding: 15px !important;
+    min-height: 200px;
+    max-height: 350px;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+  }
+
+  .vert-text {
+    writing-mode: vertical-rl !important;
+    text-orientation: upright !important;
+    letter-spacing: 4px !important;
+    line-height: 2.2 !important;
+    font-family: 'Hiragino Mincho ProN', 'Yu Mincho', 'Noto Serif CJK JP', 'Microsoft YaHei', serif !important;
+    font-size: 1.2rem !important;
+    color: #00f2fe !important;
+    display: inline-block !important;
+    height: 100% !important;
+  }
+</style>
+
+</head>
+<body>
+  <div class="header">
+    <h1>🎮 Traversal Decoder & Analysis Suite</h1>
+    <span style="color: var(--text-muted);">WSL Engine v4.6</span>
+  </div>
+  <div class="container">
+    
+      <div style="margin-top: 15px; margin-bottom: 15px; display: flex; justify-content: flex-end;">
+        <button onclick="exportAllToCSV()" style="background: var(--accent-color, #00f2fe); color: #000; font-weight: bold; padding: 10px 18px; border: none; border-radius: 6px; cursor: pointer; transition: opacity 0.2s;">
+          📥 Export Full Analysis to CSV
+        </button>
+      </div>
+
+
+<div class="nav-tabs">
+  <button class="nav-btn active" onclick="switchPage('page-decoder', this)">⚡ Traversal & Decoder</button>
+  <button class="nav-btn" onclick="switchPage('page-geo', this)">🛰️ Tactical Triangulation</button>
+  <button class="nav-btn" onclick="switchPage('page-blocks', this)">🔤 Cipher & Blocks</button>
+</div>
+
+<div class="panel">
+      <h2>Control Settings</h2>
+      <label for="inputText">Target Input String / MAC / Emoji</label>
+      <input type="text" id="inputText" value="😀😎🚀">
+      
+      <label for="platformSelect">Target Layout & OS</label>
+      <select id="platformSelect" onchange="processAll()">
+        <optgroup label="Emoji Matrix Pickers">
+          <option value="emoji_standard">Standard Emoji Grid (6x5 Matrix)</option>
+        </optgroup>
+        <optgroup label="Desktop Layouts (QWERTY / QWERTZ)">
+          <option value="win11_qwerty">Windows 11 (QWERTY Standard)</option>
+          <option value="win11_qwertz">Windows 11 (QWERTZ German/Swiss)</option>
+          <option value="mac_qwerty">macOS (QWERTY Apple Matrix)</option>
+          <option value="mac_qwertz">macOS (QWERTZ Apple Matrix)</option>
+          <option value="linux_qwerty">Linux / X11 (QWERTY Matrix)</option>
+          <option value="linux_qwertz">Linux / X11 (QWERTZ Matrix)</option>
+        </optgroup>
+        <optgroup label="TV & On-Screen Keyboards">
+          <option value="youtube_tv">YouTube TV (6x7 Matrix)</option>
+          <option value="xbox_os">Xbox OS (10x4 Matrix)</option>
+          <option value="playstation_os">PlayStation OS (11x4 Matrix)</option>
+        </optgroup>
+      </select>
+
+      <label style="display: flex; align-items: center; gap: 8px; margin-top: 15px; cursor: pointer; text-transform: none;">
+        <input type="checkbox" id="enableWrap" checked style="width: auto;" onchange="processAll()">
+        <span>Enable Toroidal Grid Wrapping</span>
+      </label>
+      
+      <div class="btn-group">
+        <button onclick="processAll()">Run Analysis & Conversion</button>
+        <button class="secondary" onclick="exportCSV()">Export Traversal CSV</button>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>Traversal Route Execution</h2>
+      <div class="meta-pills">
+        <div class="pill" id="pillSteps">Steps: <strong>0</strong></div>
+        <div class="pill" id="pillPos">Final Pos: <strong>[0, 0]</strong></div>
+      </div>
+      <pre id="traversalOutput">Awaiting calculation...</pre>
+    </div>
+
+    
+        <div class="encoder-card">
+          <label>Grouped Output</label>
+          <pre id="blockOutput">Awaiting input...</pre>
+          <div style="margin-top: 8px; font-size: 0.85rem; color: var(--text-dim);" id="blockStats">Length: 0 chars | Groups: 0</div>
+        </div>
+      </div>
+    </div>
+
+  
+
+
+
+<div id="page-blocks" class="tab-page">
+  <!-- PANEL 1: Cipher Grouping & Multi-Base Transmutation -->
+  <div class="panel full-width" style="margin-bottom: 25px;">
+    <h2>🔤 Cipher Grouping & Multi-Base Transmutation</h2>
+    <p style="color: #8a99ad; font-size: 0.9rem; margin-bottom: 15px;">
+      Convert and group raw payload data into standardized military block sizes, binary bits, hexadecimal bytes, or octal notation.
+    </p>
+
+    <div class="grid-encoders" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+      <div class="encoder-card" style="background: rgba(10,15,26,0.6); padding: 15px; border-radius: 8px; border: 1px solid rgba(0,242,254,0.2);">
+        <label for="blockInput" style="display:block; margin-bottom: 8px; font-weight: bold; color: #00f2fe;">Input Text / Payload</label>
+        <textarea id="blockInput" rows="4" style="width: 100%; box-sizing: border-box;" placeholder="Enter text or raw data to convert and group..."></textarea>
+        
+        <div style="display: flex; flex-wrap: wrap; gap: 12px; margin-top: 12px; align-items: center;">
+          <div>
+            <label style="font-size: 0.85rem; color: #8a99ad; display: block;">Format Base:</label>
+            <select id="baseFormat">
+              <option value="alpha">Alphanumeric (Text Chunks)</option>
+              <option value="binary">Binary (0s & 1s)</option>
+              <option value="hex">Hexadecimal (0-F)</option>
+              <option value="octal">Octal (Base 8)</option>
+            </select>
+          </div>
+
+          <div>
+            <label style="font-size: 0.85rem; color: #8a99ad; display: block;">Group Size:</label>
+            <input type="number" id="groupSize" value="5" min="1" max="32" style="width: 70px;">
+          </div>
+
+          <div style="margin-top: 18px; display: flex; gap: 15px;">
+            <label style="font-size: 0.85rem; color: #8a99ad; cursor: pointer;">
+              <input type="checkbox" id="uppercaseOnly" checked> Uppercase
+            </label>
+            <label style="font-size: 0.85rem; color: #8a99ad; cursor: pointer;">
+              <input type="checkbox" id="alphaOnly" checked> Strip Non-Alphanumeric
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div class="encoder-card" style="background: rgba(10,15,26,0.6); padding: 15px; border-radius: 8px; border: 1px solid rgba(0,242,254,0.2);">
+        <label style="display:block; margin-bottom: 8px; font-weight: bold; color: #00f2fe;">Formatted & Grouped Output</label>
+        <div id="blockOutput" style="min-height: 100px; background: #050b14; padding: 10px; border-radius: 6px; color: #50fa7b; font-family: monospace;">Awaiting input...</div>
+        <div style="margin-top: 10px; font-size: 0.85rem; color: #00f2fe;" id="blockStats">Length: 0 symbols | Groups: 0</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PANEL 2: Vertical Text Transposition Engine -->
+  <div class="panel full-width">
+    <h2>⛩️ Vertical Text Transposition Engine (Tate-chu-yoko / 縦書き)</h2>
+    <p style="color: #8a99ad; font-size: 0.85rem; margin-bottom: 12px;">
+      Format text for traditional East Asian vertical layout (Japanese, Cantonese, Traditional Chinese, Korean).
+    </p>
+
+    <div class="grid-encoders" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+      <div class="encoder-card" style="background: rgba(10,15,26,0.6); padding: 15px; border-radius: 8px; border: 1px solid rgba(0,242,254,0.2);">
+        <label for="vertInput" style="display:block; margin-bottom: 8px; font-weight: bold; color: #00f2fe;">Input Text (English / CJK / Text)</label>
+        <textarea id="vertInput" rows="4" style="width: 100%; box-sizing: border-box;" placeholder="Enter text to transpose vertically..."></textarea>
+        
+        <div style="display: flex; flex-wrap: wrap; gap: 12px; margin-top: 12px; align-items: center;">
+          <div>
+            <label style="font-size: 0.85rem; color: #8a99ad; display: block;">Transposition Mode:</label>
+            <select id="vertMode">
+              <option value="raw">Direct Vertical Stacking (CJK / Text)</option>
+              <option value="kana">Phonetic Transliteration (English -> Katakana)</option>
+            </select>
+          </div>
+
+          <div>
+            <label style="font-size: 0.85rem; color: #8a99ad; display: block;">Column Flow:</label>
+            <select id="vertDirection">
+              <option value="rtl">Traditional (Right-to-Left Columns)</option>
+              <option value="ltr">Modern (Left-to-Right Columns)</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="encoder-card" style="background: rgba(10,15,26,0.6); padding: 15px; border-radius: 8px; border: 1px solid rgba(0,242,254,0.2);">
+        <label style="display:block; margin-bottom: 8px; font-weight: bold; color: #00f2fe;">Transposed Vertical Output</label>
+        <div id="vertOutputContainer" style="background: #050b14; padding: 15px; border-radius: 6px; min-height: 200px; max-height: 350px; overflow-x: auto;">
+          <div id="vertOutputCSS" style="writing-mode: vertical-rl; text-orientation: upright; font-size: 1.2rem; color: #00f2fe; line-height: 2.2; letter-spacing: 4px;">縦書きテキストプレビュー (Awaiting input...)</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+      <div class="encoder-card" style="background: rgba(10,15,26,0.6); padding: 15px; border-radius: 8px; border: 1px solid rgba(0,242,254,0.2);">
+        <label style="display:block; margin-bottom: 8px; font-weight: bold; color: #00f2fe;">Formatted & Grouped Output</label>
+        <div id="blockOutput" style="min-height: 100px; background: #050b14; padding: 10px; border-radius: 6px; color: #50fa7b; font-family: monospace;">Awaiting input...</div>
+        <div style="margin-top: 10px; font-size: 0.85rem; color: #00f2fe;" id="blockStats">Length: 0 symbols | Groups: 0</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PANEL 2: Vertical Text Transposition Engine -->
+  <div class="panel full-width">
+    <h2>⛩️ Vertical Text Transposition Engine (Tate-chu-yoko / 縦書き)</h2>
+    <p style="color: #8a99ad; font-size: 0.85rem; margin-bottom: 12px;">
+      Format text for traditional East Asian vertical layout (Japanese, Cantonese, Traditional Chinese, Korean).
+    </p>
+
+    <div class="grid-encoders" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+      <div class="encoder-card" style="background: rgba(10,15,26,0.6); padding: 15px; border-radius: 8px; border: 1px solid rgba(0,242,254,0.2);">
+        <label for="vertInput" style="display:block; margin-bottom: 8px; font-weight: bold; color: #00f2fe;">Input Text (English / CJK / Text)</label>
+        <textarea id="vertInput" rows="4" style="width: 100%; box-sizing: border-box;" placeholder="Enter text to transpose vertically..."></textarea>
+        
+        <div style="display: flex; flex-wrap: wrap; gap: 12px; margin-top: 12px; align-items: center;">
+          <div>
+            <label style="font-size: 0.85rem; color: #8a99ad; display: block;">Transposition Mode:</label>
+            <select id="vertMode">
+              <option value="raw">Direct Vertical Stacking (CJK / Text)</option>
+              <option value="kana">Phonetic Transliteration (English -> Katakana)</option>
+            </select>
+          </div>
+
+          <div>
+            <label style="font-size: 0.85rem; color: #8a99ad; display: block;">Column Flow:</label>
+            <select id="vertDirection">
+              <option value="rtl">Traditional (Right-to-Left Columns)</option>
+              <option value="ltr">Modern (Left-to-Right Columns)</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="encoder-card" style="background: rgba(10,15,26,0.6); padding: 15px; border-radius: 8px; border: 1px solid rgba(0,242,254,0.2);">
+        <label style="display:block; margin-bottom: 8px; font-weight: bold; color: #00f2fe;">Transposed Vertical Output</label>
+        <div id="vertOutputContainer" style="background: #050b14; padding: 15px; border-radius: 6px; min-height: 200px; max-height: 350px; overflow-x: auto;">
+          <div id="vertOutputCSS" style="writing-mode: vertical-rl; text-orientation: upright; font-size: 1.2rem; color: #00f2fe; line-height: 2.2; letter-spacing: 4px;">縦書きテキストプレビュー (Awaiting input...)</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+      <div class="encoder-card" style="background: rgba(10,15,26,0.6); padding: 15px; border-radius: 8px; border: 1px solid rgba(0,242,254,0.2);">
+        <label style="display:block; margin-bottom: 8px; font-weight: bold; color: #00f2fe;">Formatted & Grouped Output</label>
+        <div id="blockOutput" style="min-height: 100px;">Awaiting input...</div>
+        <div style="margin-top: 10px; font-size: 0.85rem; color: #00f2fe;" id="blockStats">Length: 0 symbols | Groups: 0</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel full-width" style="margin-top: 20px;">
+    <h2>⛩️ Vertical Text Transposition Engine (Tate-chu-yoko / 縦書き)</h2>
+    <p style="color: #8a99ad; font-size: 0.85rem; margin-bottom: 12px;">
+      Format text for traditional East Asian vertical layout (Japanese, Cantonese, Traditional Chinese, Korean).
+    </p>
+
+    <div class="grid-encoders" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+      <div class="encoder-card" style="background: rgba(10,15,26,0.6); padding: 15px; border-radius: 8px; border: 1px solid rgba(0,242,254,0.2);">
+        <label for="vertInput" style="display:block; margin-bottom: 8px; font-weight: bold; color: #00f2fe;">Input Text (English / CJK / Text)</label>
+        <textarea id="vertInput" rows="4" style="width: 100%;" placeholder="Enter text to transpose vertically..."></textarea>
+        
+        <div style="display: flex; flex-wrap: wrap; gap: 12px; margin-top: 12px; align-items: center;">
+          <div>
+            <label style="font-size: 0.85rem; color: #8a99ad; display: block;">Transposition Mode:</label>
+            <select id="vertMode">
+              <option value="raw">Direct Vertical Stacking (CJK / Text)</option>
+              <option value="kana">Phonetic Transliteration (English -> Katakana)</option>
+            </select>
+          </div>
+
+          <div>
+            <label style="font-size: 0.85rem; color: #8a99ad; display: block;">Column Flow:</label>
+            <select id="vertDirection">
+              <option value="rtl">Traditional (Right-to-Left Columns)</option>
+              <option value="ltr">Modern (Left-to-Right Columns)</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="encoder-card" style="background: rgba(10,15,26,0.6); padding: 15px; border-radius: 8px; border: 1px solid rgba(0,242,254,0.2);">
+        <label style="display:block; margin-bottom: 8px; font-weight: bold; color: #00f2fe;">Transposed Vertical Output</label>
+        <div id="vertOutputContainer">
+          <div id="vertOutputCSS" class="vert-text">縦書きテキストプレビュー (Awaiting input...)</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+      <div class="encoder-card">
+        <label>Formatted & Grouped Output</label>
+        <pre id="blockOutput" style="white-space: pre-wrap; word-break: break-all; min-height: 100px; max-height: 250px; overflow-y: auto;">Awaiting input...</pre>
+        <div style="margin-top: 10px; font-size: 0.85rem; color: #00f2fe;" id="blockStats">Length: 0 symbols | Groups: 0</div>
+      </div>
+    </div>
+  
+    <div class="panel full-width" style="margin-top: 20px;">
+      <h2>⛩️ Vertical Text Transposition Engine (Tate-chu-yoko / 縦書き)</h2>
+      <p style="color: #8a99ad; font-size: 0.85rem; margin-bottom: 12px;">
+        Format text for traditional East Asian vertical layout (Japanese, Cantonese, Traditional Chinese, Korean).
+      </p>
+
+      <div class="grid-encoders">
+        <div class="encoder-card">
+          <label for="vertInput">Input Text (Kanji / Hanzi / Kana / Text)</label>
+          <textarea id="vertInput" rows="4" placeholder="Enter text to transpose vertically..." oninput="transposeVertical()"></textarea>
+          
+          <div style="display: flex; flex-wrap: wrap; gap: 12px; margin-top: 12px; align-items: center;">
+            <div>
+              <label style="font-size: 0.85rem; color: #8a99ad; display: block;">Column Flow Direction:</label>
+              <select id="vertDirection" onchange="transposeVertical()" style="padding: 6px 10px; border-radius: 4px; background: #0a0f1a; color: #00f2fe; border: 1px solid rgba(0,242,254,0.3);">
+                <option value="rtl">Traditional (Right-to-Left Columns)</option>
+                <option value="ltr">Modern (Left-to-Right Columns)</option>
+              </select>
+            </div>
+
+            <div>
+              <label style="font-size: 0.85rem; color: #8a99ad; display: block;">Max Column Height (Chars):</label>
+              <input type="number" id="columnHeight" value="10" min="2" max="50" style="width: 75px; padding: 6px; border-radius: 4px; background: #0a0f1a; color: #fff; border: 1px solid rgba(0,242,254,0.3);" onchange="transposeVertical()" oninput="transposeVertical()">
+            </div>
+          </div>
+        </div>
+
+        <div class="encoder-card">
+          <label>Transposed Vertical Output</label>
+          <div id="vertOutputCSS" style="writing-mode: vertical-rl; text-orientation: upright; font-family: 'Hiragino Mincho ProN', 'Yu Mincho', 'Noto Serif CJK JP', serif; font-size: 1.1rem; line-height: 1.8; background: #050b14; padding: 15px; border-radius: 6px; min-height: 180px; max-height: 300px; overflow-x: auto; border: 1px solid rgba(0,242,254,0.2);">
+            縦書きテキストプレビュー (Awaiting input...)
+          </div>
+        </div>
+      </div>
+    </div>
+
+</div>
+</div>
+
+  
+
+
+
+<script>
+    // Tab Switching Engine for top buttons
+    function switchPage(pageId, btnElement) {
+      document.querySelectorAll('.tab-page').forEach(page => {
+        page.classList.remove('active');
+        page.style.display = 'none';
+      });
+
+      document.querySelectorAll('.nav-btn').forEach(btn => {
+        btn.classList.remove('active');
+      });
+
+      const targetPage = document.getElementById(pageId);
+      if (targetPage) {
+        targetPage.classList.add('active');
+        targetPage.style.display = 'block';
+      }
+
+      if (btnElement) {
+        btnElement.classList.add('active');
+      }
+    }
+
+    // Process Top Cipher Blocks
+    function processCipherBlocks() {
+      const inputElem = document.getElementById('blockInput');
+      const rawText = inputElem ? inputElem.value : '';
+      const format = document.getElementById('baseFormat')?.value || 'alpha';
+      const groupSize = parseInt(document.getElementById('groupSize')?.value, 10) || 5;
+      const uppercaseOnly = document.getElementById('uppercaseOnly')?.checked ?? true;
+      const alphaOnly = document.getElementById('alphaOnly')?.checked ?? true;
+
+      const outElem = document.getElementById('blockOutput');
+      const statsElem = document.getElementById('blockStats');
+
+      if (!rawText || !rawText.trim()) {
+        if (outElem) outElem.innerText = 'Awaiting input...';
+        if (statsElem) statsElem.innerText = 'Length: 0 symbols | Groups: 0';
+        return;
+      }
+
+      let processed = '';
+      if (format === 'binary') {
+        processed = Array.from(rawText).map(c => c.charCodeAt(0).toString(2).padStart(8, '0')).join('');
+      } else if (format === 'hex') {
+        processed = Array.from(rawText).map(c => c.charCodeAt(0).toString(16).padStart(2, '0')).join('');
+      } else if (format === 'octal') {
+        processed = Array.from(rawText).map(c => c.charCodeAt(0).toString(8).padStart(3, '0')).join('');
+      } else {
+        processed = rawText;
+        if (alphaOnly) processed = processed.replace(/[^a-zA-Z0-9]/g, '');
+      }
+
+      if (uppercaseOnly && format !== 'binary' && format !== 'octal') {
+        processed = processed.toUpperCase();
+      }
+
+      const regex = new RegExp('.{1,' + groupSize + '}', 'g');
+      const groups = processed.match(regex) || [];
+
+      if (outElem) outElem.innerText = groups.join(' ') || 'No matching characters.';
+      if (statsElem) statsElem.innerText = `Total Symbols: ${processed.length} | Block Count: ${groups.length} (Size: ${groupSize})`;
+    }
+
+    // Phonetic Conversion
+    const kanaMap = {
+      'ka':'カ','ki':'キ','ku':'ク','ke':'ケ','ko':'コ','sa':'サ','shi':'シ','su':'ス','se':'セ','so':'ソ',
+      'ta':'タ','chi':'チ','tsu':'ツ','te':'テ','to':'ト','na':'ナ','ni':'ニ','nu':'ヌ','ne':'ネ','no':'ノ',
+      'ha':'ハ','hi':'ヒ','fu':'フ','he':'ヘ','ho':'ホ','ma':'マ','mi':'ミ','mu':'ム','me':'メ','mo':'モ',
+      'ya':'ヤ','yu':'ユ','yo':'ヨ','ra':'ラ','ri':'リ','ru':'ル','re':'レ','ro':'ロ','wa':'ワ','wo':'ヲ',
+      'a':'ア','i':'イ','u':'ウ','e':'エ','o':'オ','n':'ン'
+    };
+
+    function transliterateToKana(str) {
+      let text = str.toLowerCase(), result = '', i = 0;
+      while (i < text.length) {
+        if (i + 3 <= text.length && kanaMap[text.slice(i, i + 3)]) { result += kanaMap[text.slice(i, i + 3)]; i += 3; }
+        else if (i + 2 <= text.length && kanaMap[text.slice(i, i + 2)]) { result += kanaMap[text.slice(i, i + 2)]; i += 2; }
+        else if (kanaMap[text[i]]) { result += kanaMap[text[i]]; i += 1; }
+        else { result += text[i]; i += 1; }
+      }
+      return result;
+    }
+
+    // Process Bottom Transposition Engine
+    function transposeVertical() {
+      const input = document.getElementById('vertInput')?.value || '';
+      const mode = document.getElementById('vertMode')?.value || 'raw';
+      const dir = document.getElementById('vertDirection')?.value || 'rtl';
+      const outputElem = document.getElementById('vertOutputCSS');
+
+      if (!outputElem) return;
+      if (!input || !input.trim()) {
+        outputElem.innerText = '縦書きテキストプレビュー (Awaiting input...)';
+        return;
+      }
+
+      outputElem.style.writingMode = dir === 'rtl' ? 'vertical-rl' : 'vertical-lr';
+      outputElem.innerText = mode === 'kana' ? transliterateToKana(input) : input;
+    }
+
+    // Event listeners
+    document.addEventListener("DOMContentLoaded", function() {
+      document.querySelectorAll('input, select, textarea').forEach(elem => {
+        elem.addEventListener('input', () => { processCipherBlocks(); transposeVertical(); });
+        elem.addEventListener('change', () => { processCipherBlocks(); transposeVertical(); });
+      });
+
+      processCipherBlocks();
+      transposeVertical();
+    });
+</script>
+
+
+
+
+
+<div id="agent-drawer" style="position: fixed; bottom: 20px; right: 20px; width: 350px; background: rgba(16, 22, 36, 0.95); backdrop-filter: blur(12px); border: 1px solid rgba(0, 242, 254, 0.3); border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.6); z-index: 9999; font-family: sans-serif; transition: all 0.3s ease;">
+  <div id="agent-header" onclick="toggleAgentDrawer()" style="padding: 12px 16px; background: linear-gradient(135deg, rgba(0,242,254,0.2), rgba(79,172,254,0.2)); border-radius: 12px 12px 0 0; cursor: pointer; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(0,242,254,0.2);">
+    <span style="font-weight: bold; color: #00f2fe; font-size: 0.95rem;">🤖 Suite AI Assistant & Solver</span>
+    <span id="agent-toggle-icon" style="color: #00f2fe;">▲</span>
+  </div>
+  
+  <div id="agent-body" style="padding: 15px; display: none; max-height: 420px; overflow-y: auto;">
+    <div style="display: flex; gap: 8px; margin-bottom: 10px;">
+      <button onclick="runTroubleshooter()" style="font-size: 0.75rem; padding: 6px 10px; flex: 1;">🔍 Audit Suite Inputs</button>
+      <button onclick="clearAgentLog()" style="font-size: 0.75rem; padding: 6px 10px; background: rgba(255,255,255,0.1) !important; color: #fff !important;">Clear</button>
+    </div>
+
+    <div id="agent-log" style="background: rgba(5, 11, 20, 0.8); border: 1px solid rgba(255,255,255,0.05); border-radius: 6px; padding: 10px; font-size: 0.85rem; color: #c0c9d6; min-height: 120px; max-height: 200px; overflow-y: auto; margin-bottom: 10px; white-space: pre-wrap; word-break: break-all;">
+Ready to assist. Evaluate complex math expressions or audit page configurations.
+    </div>
+
+    <div style="display: flex; gap: 6px;">
+      <input type="text" id="agentInput" placeholder="e.g. sin(45 deg) * 100 or 0x4F + 12" style="flex: 1; padding: 8px; font-size: 0.85rem; border-radius: 4px; border: 1px solid rgba(0,242,254,0.3); background: #0a0f1a; color: #fff;" onkeydown="if(event.key==='Enter') solveMathExpression()">
+      <button onclick="solveMathExpression()" style="padding: 8px 12px; font-size: 0.85rem;">Solve</button>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

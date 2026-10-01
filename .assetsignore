@@ -1,0 +1,11 @@
+.git
+__pycache__
+.wrangler
+*.py
+*.backup
+*.old-messy
+LEFT
+RIGHT
+PRESS
+UP
+outputs
