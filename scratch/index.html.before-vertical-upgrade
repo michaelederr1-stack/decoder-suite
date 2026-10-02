@@ -551,22 +551,19 @@
     <div id="page-vertical" class="tab-page">
       <div class="panel">
         <h2>Vertical Text Transposition (縦書き)</h2>
-        <p class="desc">Display Japanese, Chinese, or Korean text in traditional vertical layout. Optionally convert English into Katakana, Hiragana, or Hangul.</p>
+        <p class="desc">Format text for traditional East-Asian vertical layout. Optional English → Katakana phonetic conversion.</p>
 
         <div class="grid-2">
           <div class="card">
             <label for="vertInput">Input Text</label>
-            <textarea id="vertInput" placeholder="Paste Japanese / Chinese / Korean text directly, or type English to convert…"></textarea>
+            <textarea id="vertInput" placeholder="English, Japanese, Chinese, Korean…"></textarea>
 
             <div class="row">
               <div>
                 <label for="vertMode">Mode</label>
                 <select id="vertMode">
-                  <option value="raw" selected>Direct vertical (CJK / text)</option>
+                  <option value="raw">Direct vertical (CJK / text)</option>
                   <option value="kana">English → Katakana</option>
-                  <option value="hira">English → Hiragana</option>
-                  <option value="hangul">English → Hangul (Korean)</option>
-                  <option value="canto">English → Cantonese (basic)</option>
                 </select>
               </div>
               <div>
@@ -946,81 +943,33 @@ if (_swapBtn) _swapBtn.addEventListener('click', () => {
     });
 
     /* ========== VERTICAL TEXT ========== */
-    /* ========== VERTICAL TEXT – expanded language support ========== */
     const kanaMap = {
-      shi:"シ", chi:"チ", tsu:"ツ",
       ka:"カ",ki:"キ",ku:"ク",ke:"ケ",ko:"コ",
-      sa:"サ",su:"ス",se:"セ",so:"ソ",
-      ta:"タ",te:"テ",to:"ト",
+      sa:"サ",shi:"シ",su:"ス",se:"セ",so:"ソ",
+      ta:"タ",chi:"チ",tsu:"ツ",te:"テ",to:"ト",
       na:"ナ",ni:"ニ",nu:"ヌ",ne:"ネ",no:"ノ",
       ha:"ハ",hi:"ヒ",fu:"フ",he:"ヘ",ho:"ホ",
       ma:"マ",mi:"ミ",mu:"ム",me:"メ",mo:"モ",
       ya:"ヤ",yu:"ユ",yo:"ヨ",
       ra:"ラ",ri:"リ",ru:"ル",re:"レ",ro:"ロ",
       wa:"ワ",wo:"ヲ",n:"ン",
-      ga:"ガ",gi:"ギ",gu:"グ",ge:"ゲ",go:"ゴ",
-      za:"ザ",ji:"ジ",zu:"ズ",ze:"ゼ",zo:"ゾ",
-      da:"ダ",de:"デ",do:"ド",
-      ba:"バ",bi:"ビ",bu:"ブ",be:"ベ",bo:"ボ",
-      pa:"パ",pi:"ピ",pu:"プ",pe:"ペ",po:"ポ",
-      kya:"キャ",kyu:"キュ",kyo:"キョ",
-      sha:"シャ",shu:"シュ",sho:"ショ",
-      cha:"チャ",chu:"チュ",cho:"チョ",
-      nya:"ニャ",nyu:"ニュ",nyo:"ニョ",
-      hya:"ヒャ",hyu:"ヒュ",hyo:"ヒョ",
-      mya:"ミャ",myu:"ミュ",myo:"ミョ",
-      rya:"リャ",ryu:"リュ",ryo:"リョ",
-      gya:"ギャ",gyu:"ギュ",gyo:"ギョ",
-      ja:"ジャ",ju:"ジュ",jo:"ジョ",
-      bya:"ビャ",byu:"ビュ",byo:"ビョ",
-      pya:"ピャ",pyu:"ピュ",pyo:"ピョ",
       a:"ア",i:"イ",u:"ウ",e:"エ",o:"オ"
     };
 
-    const hiraMap = {};
-    for (const [k,v] of Object.entries(kanaMap)) {
-      hiraMap[k] = String.fromCharCode(v.charCodeAt(0) - 0x60);
-    }
-
-    function toKanaOrHira(str, useHira) {
-      const map = useHira ? hiraMap : kanaMap;
-      let text = str.toLowerCase().replace(/[^a-z\s]/g, " ");
-      let result = "", i = 0;
+    function toKana(str) {
+      let text = str.toLowerCase(), result = "", i = 0;
       while (i < text.length) {
-        if (text[i] === " ") { result += "　"; i++; continue; }
-        if (i + 3 <= text.length && map[text.slice(i, i + 3)]) {
-          result += map[text.slice(i, i + 3)]; i += 3;
-        } else if (i + 2 <= text.length && map[text.slice(i, i + 2)]) {
-          result += map[text.slice(i, i + 2)]; i += 2;
-        } else if (map[text[i]]) {
-          result += map[text[i]]; i += 1;
+        if (i + 3 <= text.length && kanaMap[text.slice(i, i + 3)]) {
+          result += kanaMap[text.slice(i, i + 3)]; i += 3;
+        } else if (i + 2 <= text.length && kanaMap[text.slice(i, i + 2)]) {
+          result += kanaMap[text.slice(i, i + 2)]; i += 2;
+        } else if (kanaMap[text[i]]) {
+          result += kanaMap[text[i]]; i += 1;
         } else {
           result += text[i]; i += 1;
         }
       }
       return result;
-    }
-
-    const hangulSyllables = {
-      "annyeong":"안녕", "haseyo":"하세요", "gamsahamnida":"감사합니다",
-      "annyeonghaseyo":"안녕하세요",
-      "ne":"네", "ani":"아니", "yo":"요",
-      "kim":"김", "lee":"이", "park":"박", "choi":"최", "jung":"정",
-      "hello":"안녕", "thanks":"감사", "yes":"네", "no":"아니",
-      "sarang":"사랑", "hae":"해"
-    };
-
-    function toHangul(str) {
-      let text = str.toLowerCase().trim();
-      const keys = Object.keys(hangulSyllables).sort((a,b) => b.length - a.length);
-      for (const k of keys) {
-        text = text.split(k).join(hangulSyllables[k]);
-      }
-      return text;
-    }
-
-    function toCanto(str) {
-      return "[粵] " + str;
     }
 
     function transposeVertical() {
@@ -1033,20 +982,8 @@ if (_swapBtn) _swapBtn.addEventListener('click', () => {
         el.textContent = "縦書きプレビュー";
         return;
       }
-
       el.style.writingMode = dir === "rtl" ? "vertical-rl" : "vertical-lr";
-
-      if (mode === "kana") {
-        el.textContent = toKanaOrHira(input, false);
-      } else if (mode === "hira") {
-        el.textContent = toKanaOrHira(input, true);
-      } else if (mode === "hangul") {
-        el.textContent = toHangul(input);
-      } else if (mode === "canto") {
-        el.textContent = toCanto(input);
-      } else {
-        el.textContent = input;
-      }
+      el.textContent = mode === "kana" ? toKana(input) : input;
     }
 
     ["vertInput", "vertMode", "vertDirection"].forEach(id => {
