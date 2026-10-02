@@ -4,3 +4,6 @@
 !.dev.vars.example
 .env*
 !.env.example
+.wrangler/
+__pycache__/
+nano.*.save
