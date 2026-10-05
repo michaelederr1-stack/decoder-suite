@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta name="google-adsense-account" content="ca-pub-2715989048289755">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2715989048289755" crossorigin="anonymous"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Traversal Decoder & Multi-Encoder Suite</title>
+  <meta name="description" content="Free interactive keyboard traversal, cipher grouping, vertical text, daily brief and analysis tools." />
+  <meta name="author" content="michaelederr1" />
+  <meta property="og:title" content="Traversal Decoder & Multi-Encoder Suite" />
+  <meta property="og:description" content="Interactive decoder, cipher tools and daily brief." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://codexdecoded.com" />
+  <style>
+    :root {
+      --bg: #090a0f;
+      --panel: rgba(16, 22, 36, 0.78);
+      --card: rgba(10, 15, 26, 0.85);
+      --accent: #00f2fe;
+      --accent2: #4facfe;
+      --text: #e2e8f0;
+      --muted: #8a99ad;
+      --border: rgba(0, 242, 254, 0.18);
+      --success: #50fa7b;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: "Segoe UI", system-ui, sans-serif;
+      background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);
+      color: var(--text);
+      min-height: 100vh;
+      line-height: 1.5;
+    }
+    body::before {
+      content: "";
+      position: fixed; inset: 0;
+      background-image:
+        radial-gradient(1.5px 1.5px at 20px 30px, #fff, transparent),
+        radial-gradient(1.5px 1.5px at 40px 70px, var(--accent), transparent),
+        radial-gradient(1px 1px at 90px 40px, #fff, transparent);
+      background-size: 200px 200px;
+      opacity: 0.25;
+      pointer-events: none;
+      z-index: -1;
+    }
+    .app { max-width: 1280px; margin: 0 auto; padding: 24px 16px 80px; }
+    .header {
+      display: flex; justify-content: space-between; align-items: center;
+      flex-wrap: wrap; gap: 12px; margin-bottom: 24px;
+      padding-bottom: 18px; border-bottom: 1px solid var(--border);
+    }
+    .header h1 {
+      font-size: 1.65rem;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .header .version { color: var(--muted); font-size: 0.85rem; }
+    .nav-tabs {
+      display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 22px;
+      border-bottom: 2px solid rgba(0, 242, 254, 0.15); padding-bottom: 10px;
+    }
+    .nav-btn {
+      background: rgba(16, 22, 36, 0.7); color: var(--muted);
+      border: 1px solid rgba(0, 242, 254, 0.15); border-radius: 8px;
+      padding: 9px 16px; font-size: 0.9rem; font-weight: 600; cursor: pointer;
+    }
+    .nav-btn:hover { color: #fff; background: rgba(0, 242, 254, 0.12); border-color: var(--accent); }
+    .nav-btn.active {
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: #050b14; border-color: var(--accent);
+      box-shadow: 0 4px 14px rgba(0, 242, 254, 0.35);
+    }
+    .panel {
+      background: var(--panel); backdrop-filter: blur(12px);
+      border: 1px solid var(--border); border-radius: 12px;
+      padding: 20px; margin-bottom: 18px;
+    }
+    .panel h2 { font-size: 1.05rem; margin-bottom: 14px; color: #fff; }
+    .panel p.desc { color: var(--muted); font-size: 0.88rem; margin-bottom: 14px; }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+    @media (max-width: 800px) { .grid-2 { grid-template-columns: 1fr; } }
+    .card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 10px; padding: 16px;
+    }
+    label {
+      display: block; font-size: 0.78rem; font-weight: 600;
+      color: var(--muted); text-transform: uppercase; margin-bottom: 6px;
+    }
+    input[type="text"], input[type="number"], select, textarea {
+      width: 100%; padding: 10px 12px; background: #0a0f1a;
+      color: var(--accent); border: 1px solid rgba(0, 242, 254, 0.28);
+      border-radius: 6px; font-size: 0.95rem; outline: none;
+    }
+    textarea { min-height: 100px; resize: vertical; font-family: ui-monospace, monospace; }
+    .row { display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end; margin-top: 12px; }
+    .row > div { flex: 1; min-width: 120px; }
+    .checkbox-row {
+      display: flex; gap: 16px; flex-wrap: wrap; margin-top: 12px;
+      font-size: 0.85rem; color: var(--muted);
+    }
+    .checkbox-row label {
+      display: flex; align-items: center; gap: 6px;
+      text-transform: none; cursor: pointer; font-weight: 500;
+    }
+    .checkbox-row input { width: auto; accent-color: var(--accent); }
+    button {
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: #050b14; font-weight: 700; border: none; border-radius: 6px;
+      padding: 9px 16px; cursor: pointer; font-size: 0.9rem;
+    }
+    button.secondary {
+      background: rgba(255,255,255,0.06); color: var(--text);
+      border: 1px solid var(--border);
+    }
+    button.sm { padding: 6px 12px; font-size: 0.8rem; }
+    .btn-group { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; }
+    .output {
+      background: #050b14; border: 1px solid rgba(0, 242, 254, 0.2);
+      border-radius: 8px; padding: 14px; font-family: ui-monospace, monospace;
+      color: var(--success); white-space: pre-wrap; word-break: break-all;
+      min-height: 90px; max-height: 320px; overflow-y: auto; font-size: 0.9rem;
+    }
+    .stats { margin-top: 8px; font-size: 0.82rem; color: var(--accent); }
+    .pills { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+    .pill {
+      background: var(--card); border: 1px solid var(--border);
+      padding: 6px 12px; border-radius: 20px; font-size: 0.8rem; color: var(--muted);
+    }
+    .pill strong { color: var(--accent); }
+    #vertOutput {
+      writing-mode: vertical-rl; text-orientation: upright;
+      font-family: "Hiragino Mincho ProN", "Yu Mincho", "Noto Serif CJK JP", serif;
+      font-size: 1.15rem; line-height: 2.1; letter-spacing: 3px;
+      color: var(--accent); background: #050b14;
+      border: 1px solid rgba(0, 242, 254, 0.2); border-radius: 8px;
+      padding: 18px; min-height: 200px; max-height: 340px; overflow-x: auto;
+    }
+    .tab-page { display: none; }
+    .tab-page.active { display: block; }
+    .howto-section { margin-bottom: 22px; }
+    .howto-section h3 { color: var(--accent); font-size: 1rem; margin-bottom: 8px; }
+    .howto-section ul, .howto-section ol { padding-left: 20px; color: var(--muted); font-size: 0.92rem; }
+    .howto-section li { margin-bottom: 6px; }
+    .kb-preview { display: grid; gap: 3px; margin-top: 12px; font-family: monospace; font-size: 0.72rem; }
+    .kb-row { display: flex; gap: 3px; justify-content: center; }
+    .kb-key {
+      background: rgba(0, 242, 254, 0.08); border: 1px solid rgba(0, 242, 254, 0.2);
+      border-radius: 4px; padding: 4px 6px; min-width: 22px; text-align: center; color: var(--muted);
+    }
+    .kb-key.hit { background: rgba(0, 242, 254, 0.35); color: #fff; border-color: var(--accent); }
+    footer {
+      margin-top: 50px; padding: 24px 0; border-top: 1px solid rgba(0,242,254,0.15);
+      text-align: center; color: #8a99ad; font-size: 0.85rem;
+    }
+    footer a { color: #00f2fe; text-decoration: none; }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="header">
+      <h1>Traversal Decoder & Multi-Encoder Suite</h1>
+      <span class="version">v5.2 · Daily Brief</span>
+    </header>
+
+    <nav class="nav-tabs">
+      <button class="nav-btn active" data-page="page-decoder">Traversal & Decoder</button>
+      <button class="nav-btn" data-page="page-blocks">Cipher & Blocks</button>
+      <button class="nav-btn" data-page="page-vertical">Vertical Text</button>
+      <button class="nav-btn" data-page="page-daily">Daily Brief</button>
+      <button class="nav-btn" data-page="page-howto">How-To & Docs</button>
+    </nav>
+
+    <!-- DECODER -->
+    <div id="page-decoder" class="tab-page active">
+      <div class="grid-2">
+        <div class="panel">
+          <h2>Control Settings</h2>
+          <label for="inputText">Target Input</label>
+          <input type="text" id="inputText" value="😀😎🚀" placeholder="Enter characters or emoji…" />
+          <label for="platformSelect" style="margin-top:14px">Keyboard / Matrix Layout</label>
+          <select id="platformSelect">
+            <optgroup label="Emoji"><option value="emoji_6x5">Emoji Grid (6×5)</option></optgroup>
+            <optgroup label="Desktop">
+              <option value="qwerty">QWERTY</option>
+              <option value="qwertz">QWERTZ</option>
+              <option value="azerty">AZERTY</option>
+            </optgroup>
+            <optgroup label="TV / Console">
+              <option value="youtube_tv">YouTube TV</option>
+              <option value="xbox">Xbox</option>
+            </optgroup>
+          </select>
+          <div class="checkbox-row">
+            <label><input type="checkbox" id="enableWrap" checked /> Toroidal wrap</label>
+            <label><input type="checkbox" id="showPath" checked /> Highlight path</label>
+          </div>
+          <div class="btn-group">
+            <button id="btnRun">Run Analysis</button>
+            <button class="secondary" id="btnCopyTraversal">Copy Path</button>
+            <button class="secondary" id="btnExportCSV">Export CSV</button>
+          </div>
+        </div>
+        <div class="panel">
+          <h2>Traversal Result</h2>
+          <div class="pills">
+            <div class="pill">Steps: <strong id="pillSteps">0</strong></div>
+            <div class="pill">Start: <strong id="pillStart">—</strong></div>
+            <div class="pill">End: <strong id="pillEnd">—</strong></div>
+          </div>
+          <div class="output" id="traversalOutput">Awaiting calculation…</div>
+          <div id="kbVisual" class="kb-preview" style="display:none"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CIPHER & BLOCKS -->
+    <div id="page-blocks" class="tab-page">
+      <div class="panel">
+        <h2>Cipher Grouping & Multi-Base</h2>
+        <p class="desc">Convert text into alphanumeric, binary, hex or octal blocks.</p>
+        <div class="grid-2">
+          <div class="card">
+            <label for="blockInput">Input</label>
+            <textarea id="blockInput" placeholder="Paste data…"></textarea>
+            <div class="row">
+              <div>
+                <label for="baseFormat">Format</label>
+                <select id="baseFormat">
+                  <option value="alpha">Alphanumeric</option>
+                  <option value="binary">Binary</option>
+                  <option value="hex">Hex</option>
+                  <option value="octal">Octal</option>
+                </select>
+              </div>
+              <div>
+                <label for="groupSize">Group Size</label>
+                <input type="number" id="groupSize" value="5" min="1" max="64" />
+              </div>
+            </div>
+            <div class="checkbox-row">
+              <label><input type="checkbox" id="uppercaseOnly" checked /> Uppercase</label>
+              <label><input type="checkbox" id="alphaOnly" checked /> Strip non-alnum</label>
+            </div>
+          </div>
+          <div class="card">
+            <label>Output</label>
+            <div class="output" id="blockOutput">Awaiting input…</div>
+            <div class="stats" id="blockStats">Length: 0 · Groups: 0</div>
+            <button class="secondary sm" id="btnCopyBlocks" style="margin-top:10px">Copy</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- VERTICAL TEXT -->
+    <div id="page-vertical" class="tab-page">
+      <div class="panel">
+        <h2>Vertical Text (縦書き)</h2>
+        <p class="desc">East-Asian vertical layout + optional English → Katakana.</p>
+        <div class="grid-2">
+          <div class="card">
+            <label for="vertInput">Input</label>
+            <textarea id="vertInput" placeholder="English or CJK text…"></textarea>
+            <div class="row">
+              <div>
+                <label for="vertMode">Mode</label>
+                <select id="vertMode">
+                  <option value="raw">Direct vertical</option>
+                  <option value="kana">English → Katakana</option>
+                </select>
+              </div>
+              <div>
+                <label for="vertDirection">Column Flow</label>
+                <select id="vertDirection">
+                  <option value="rtl">Traditional (RTL)</option>
+                  <option value="ltr">Modern (LTR)</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <label>Preview</label>
+            <div id="vertOutput">縦書きプレビュー</div>
+            <button class="secondary sm" id="btnCopyVert" style="margin-top:10px">Copy</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DAILY BRIEF -->
+    <div id="page-daily" class="tab-page">
+      <div class="panel">
+        <h2>Daily Brief <span style="font-size:0.8rem;color:var(--muted);font-weight:400;">Sports · Finance · Crypto · Data Centers · Elections</span></h2>
+        <p class="desc">Morning digest powered by the ingest API + D1 database.</p>
+        <div class="btn-group" style="margin-bottom:18px;">
+          <button id="btnLoadDaily" class="sm">Load Today</button>
+          <button id="btnLoadTrending" class="sm secondary">Trending (24h)</button>
+          <button id="btnLoadStats" class="sm secondary">Stats</button>
+        </div>
+        <div class="pills" id="dailyMeta" style="margin-bottom:14px;">
+          <div class="pill">Status: <strong id="dailyStatus">Ready</strong></div>
+          <div class="pill">Items: <strong id="dailyCount">0</strong></div>
+        </div>
+        <div id="dailyResults" class="output" style="min-height:200px;max-height:480px;">
+          Click “Load Today” or “Trending” to fetch items from the API.
+        </div>
+      </div>
+    </div>
+
+    <!-- HOW-TO -->
+    <div id="page-howto" class="tab-page">
+      <div class="panel">
+        <h2>How-To & Documentation</h2>
+        <div class="howto-section">
+          <h3>1. Traversal & Decoder</h3>
+          <ol>
+            <li>Enter text or emoji.</li>
+            <li>Choose a keyboard layout.</li>
+            <li>Path updates live. Copy or export as needed.</li>
+          </ol>
+        </div>
+        <div class="howto-section">
+          <h3>2. Cipher & Blocks</h3>
+          <p style="color:var(--muted);font-size:0.92rem;">Convert to alphanumeric / binary / hex / octal and group into fixed sizes.</p>
+        </div>
+        <div class="howto-section">
+          <h3>3. Vertical Text</h3>
+          <p style="color:var(--muted);font-size:0.92rem;">Traditional vertical layout + optional Katakana conversion.</p>
+        </div>
+        <div class="howto-section">
+          <h3>4. Daily Brief</h3>
+          <p style="color:var(--muted);font-size:0.92rem;">
+            Focus topics: Sports, Finance, Crypto outlook, Data center buildouts, Local elections.
+            Data comes from the ingest API at <code>https://codexdecoded.com/ingest</code>.
+          </p>
+        </div>
+        <div class="howto-section">
+          <h3>5. Privacy</h3>
+          <p style="color:var(--muted);font-size:0.92rem;">
+            Tool processing happens in your browser.
+            See the <a href="/privacy.html" style="color:#00f2fe">Privacy Policy</a>.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <footer>
+      <p>© 2026 Traversal Decoder Suite · <a href="/privacy.html">Privacy Policy</a></p>
+      <p style="margin-top:6px;opacity:0.7;">All local processing happens in your browser.</p>
+    </footer>
+  </div>
+
+  <script>
+    /* ===== TABS ===== */
+    document.querySelectorAll('.nav-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-page').forEach(p => p.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById(btn.dataset.page).classList.add('active');
+      });
+    });
+
+    /* ===== TRAVERSAL ===== */
+    const LAYOUTS = {
+      qwerty: ["1234567890","qwertyuiop","asdfghjkl","zxcvbnm"],
+      qwertz: ["1234567890","qwertzuiop","asdfghjkl","yxcvbnm"],
+      azerty: ["1234567890","azertyuiop","qsdfghjklm","wxcvbn"],
+      emoji_6x5: ["😀😁😂🤣😃","😄😅😆😉😊","😋😎😍😘🥰","😗😙😚☺️🙂","🤗🤩🤔🤨😐","😑😶🙄😏😣"],
+      youtube_tv: ["abcdefg","hijklmn","opqrstu","vwxyz01","2345678","9.!@#$%"],
+      xbox: ["1234567890","qwertyuiop","asdfghjkl","zxcvbnm"]
+    };
+
+    function findPos(layout, char) {
+      const c = char.toLowerCase();
+      for (let r = 0; r < layout.length; r++) {
+        let col = layout[r].indexOf(c);
+        if (col !== -1) return { r, c: col };
+        col = layout[r].indexOf(char);
+        if (col !== -1) return { r, c: col };
+      }
+      return null;
+    }
+
+    function shortestMove(from, to, rows, cols, wrap) {
+      let dr = to.r - from.r, dc = to.c - from.c;
+      if (wrap) {
+        if (Math.abs(dr) > rows / 2) dr = dr > 0 ? dr - rows : dr + rows;
+        if (Math.abs(dc) > cols / 2) dc = dc > 0 ? dc - cols : dc + cols;
+      }
+      const moves = [];
+      for (let i = 0; i < Math.abs(dr); i++) moves.push(dr > 0 ? "Down" : "Up");
+      for (let i = 0; i < Math.abs(dc); i++) moves.push(dc > 0 ? "Right" : "Left");
+      return { moves, steps: moves.length };
+    }
+
+    function runTraversal() {
+      const text = document.getElementById('inputText').value.trim();
+      const layout = LAYOUTS[document.getElementById('platformSelect').value];
+      const wrap = document.getElementById('enableWrap').checked;
+      const showPath = document.getElementById('showPath').checked;
+      const out = document.getElementById('traversalOutput');
+      const kb = document.getElementById('kbVisual');
+
+      if (!text) {
+        out.textContent = "Enter some text or emoji first.";
+        document.getElementById('pillSteps').textContent = "0";
+        kb.style.display = "none";
+        return;
+      }
+
+      const chars = Array.from(text);
+      let totalSteps = 0, prev = null;
+      const lines = [], hitSet = new Set();
+
+      chars.forEach((ch, i) => {
+        const pos = findPos(layout, ch);
+        if (!pos) { lines.push(`[${i}] '${ch}' → not found`); return; }
+        hitSet.add(`${pos.r},${pos.c}`);
+        if (prev) {
+          const cols = Math.max(...layout.map(r => r.length));
+          const { moves, steps } = shortestMove(prev, pos, layout.length, cols, wrap);
+          totalSteps += steps;
+          lines.push(`[${i}] '${ch}' @ [${pos.r},${pos.c}] ← ${moves.join(" + ") || "stay"} (${steps})`);
+        } else {
+          lines.push(`[${i}] '${ch}' @ [${pos.r},${pos.c}] (start)`);
+        }
+        prev = pos;
+      });
+
+      out.textContent = lines.join("\n") || "No valid characters.";
+      document.getElementById('pillSteps').textContent = totalSteps;
+      document.getElementById('pillStart').textContent = chars[0] || "—";
+      document.getElementById('pillEnd').textContent = chars[chars.length-1] || "—";
+
+      if (showPath) {
+        kb.style.display = "grid";
+        kb.innerHTML = "";
+        layout.forEach((row, r) => {
+          const rowEl = document.createElement("div");
+          rowEl.className = "kb-row";
+          [...row].forEach((key, c) => {
+            const keyEl = document.createElement("div");
+            keyEl.className = "kb-key" + (hitSet.has(`${r},${c}`) ? " hit" : "");
+            keyEl.textContent = key;
+            rowEl.appendChild(keyEl);
+          });
+          kb.appendChild(rowEl);
+        });
+      } else kb.style.display = "none";
+    }
+
+    document.getElementById('btnRun').addEventListener('click', runTraversal);
+    ['inputText','platformSelect','enableWrap','showPath'].forEach(id => {
+      const el = document.getElementById(id);
+      el.addEventListener('input', runTraversal);
+      el.addEventListener('change', runTraversal);
+    });
+    document.getElementById('btnCopyTraversal').addEventListener('click', () => {
+      navigator.clipboard.writeText(document.getElementById('traversalOutput').textContent);
+    });
+    document.getElementById('btnExportCSV').addEventListener('click', () => {
+      const text = document.getElementById('traversalOutput').textContent;
+      const blob = new Blob(["step,detail\n" + text.split("\n").map((l,i)=>`${i},"${l.replace(/"/g,'""')}"`).join("\n")], {type:"text/csv"});
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = "traversal.csv";
+      a.click();
+    });
+
+    /* ===== CIPHER BLOCKS ===== */
+    function processCipherBlocks() {
+      const raw = document.getElementById('blockInput').value;
+      const format = document.getElementById('baseFormat').value;
+      const groupSize = parseInt(document.getElementById('groupSize').value, 10) || 5;
+      const upper = document.getElementById('uppercaseOnly').checked;
+      const alphaOnly = document.getElementById('alphaOnly').checked;
+      const out = document.getElementById('blockOutput');
+      const stats = document.getElementById('blockStats');
+
+      if (!raw.trim()) {
+        out.textContent = "Awaiting input…";
+        stats.textContent = "Length: 0 · Groups: 0";
+        return;
+      }
+
+      let processed = "";
+      if (format === "binary") processed = Array.from(raw).map(c => c.codePointAt(0).toString(2).padStart(8,"0")).join("");
+      else if (format === "hex") processed = Array.from(raw).map(c => c.codePointAt(0).toString(16).padStart(2,"0")).join("");
+      else if (format === "octal") processed = Array.from(raw).map(c => c.codePointAt(0).toString(8).padStart(3,"0")).join("");
+      else {
+        processed = raw;
+        if (alphaOnly) processed = processed.replace(/[^a-zA-Z0-9]/g,"");
+        if (upper) processed = processed.toUpperCase();
+      }
+
+      const groups = processed.match(new RegExp(`.{1,${groupSize}}`,"g")) || [];
+      out.textContent = groups.join(" ") || "No matching characters.";
+      stats.textContent = `Length: ${processed.length} · Groups: ${groups.length} (size ${groupSize})`;
+    }
+
+    ["blockInput","baseFormat","groupSize","uppercaseOnly","alphaOnly"].forEach(id => {
+      document.getElementById(id).addEventListener("input", processCipherBlocks);
+      document.getElementById(id).addEventListener("change", processCipherBlocks);
+    });
+    document.getElementById("btnCopyBlocks").addEventListener("click", () => {
+      navigator.clipboard.writeText(document.getElementById("blockOutput").textContent);
+    });
+
+    /* ===== VERTICAL TEXT ===== */
+    const kanaMap = {
+      ka:"カ",ki:"キ",ku:"ク",ke:"ケ",ko:"コ",sa:"サ",shi:"シ",su:"ス",se:"セ",so:"ソ",
+      ta:"タ",chi:"チ",tsu:"ツ",te:"テ",to:"ト",na:"ナ",ni:"ニ",nu:"ヌ",ne:"ネ",no:"ノ",
+      ha:"ハ",hi:"ヒ",fu:"フ",he:"ヘ",ho:"ホ",ma:"マ",mi:"ミ",mu:"ム",me:"メ",mo:"モ",
+      ya:"ヤ",yu:"ユ",yo:"ヨ",ra:"ラ",ri:"リ",ru:"ル",re:"レ",ro:"ロ",wa:"ワ",wo:"ヲ",n:"ン",
+      a:"ア",i:"イ",u:"ウ",e:"エ",o:"オ"
+    };
+    function toKana(str) {
+      let text = str.toLowerCase(), result = "", i = 0;
+      while (i < text.length) {
+        if (i+3 <= text.length && kanaMap[text.slice(i,i+3)]) { result += kanaMap[text.slice(i,i+3)]; i+=3; }
+        else if (i+2 <= text.length && kanaMap[text.slice(i,i+2)]) { result += kanaMap[text.slice(i,i+2)]; i+=2; }
+        else if (kanaMap[text[i]]) { result += kanaMap[text[i]]; i+=1; }
+        else { result += text[i]; i+=1; }
+      }
+      return result;
+    }
+    function transposeVertical() {
+      const input = document.getElementById("vertInput").value;
+      const mode = document.getElementById("vertMode").value;
+      const dir = document.getElementById("vertDirection").value;
+      const el = document.getElementById("vertOutput");
+      if (!input.trim()) { el.textContent = "縦書きプレビュー"; return; }
+      el.style.writingMode = dir === "rtl" ? "vertical-rl" : "vertical-lr";
+      el.textContent = mode === "kana" ? toKana(input) : input;
+    }
+    ["vertInput","vertMode","vertDirection"].forEach(id => {
+      document.getElementById(id).addEventListener("input", transposeVertical);
+      document.getElementById(id).addEventListener("change", transposeVertical);
+    });
+    document.getElementById("btnCopyVert").addEventListener("click", () => {
+      navigator.clipboard.writeText(document.getElementById("vertOutput").textContent);
+    });
+
+    /* ===== DAILY BRIEF ===== */
+    const INGEST_BASE = "https://codexdecoded.com/ingest";
+    // ← Replace with your real READ_API_KEY
+    const READ_API_KEY = "PASTE_YOUR_READ_API_KEY_HERE";
+
+    async function fetchDaily(endpoint) {
+      const statusEl = document.getElementById("dailyStatus");
+      const countEl  = document.getElementById("dailyCount");
+      const resultsEl = document.getElementById("dailyResults");
+      statusEl.textContent = "Loading…";
+      resultsEl.textContent = "Fetching…";
+
+      try {
+        const res = await fetch(`${INGEST_BASE}${endpoint}`, {
+          headers: {
+            "Authorization": `Bearer ${READ_API_KEY}`,
+            "Content-Type": "application/json"
+          }
+        });
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({}));
+          throw new Error(err.error || `HTTP ${res.status}`);
+        }
+        const data = await res.json();
+        const items = data.items || [];
+        statusEl.textContent = "OK";
+        countEl.textContent = items.length;
+
+        if (items.length === 0) {
+          resultsEl.textContent = "No items found for this query yet.\n\nOnce the morning job starts feeding sports, finance, crypto, data-center and election items, they will appear here.";
+          return;
+        }
+
+        resultsEl.textContent = items.map((item, i) => {
+          return [
+            `[${i+1}] ${item.title || "(no title)"}`,
+            `    Platform : ${item.platform || "—"}`,
+            `    Score    : ${item.score ?? "—"}`,
+            `    Status   : ${item.status || "—"}`,
+            `    URL      : ${item.url || "—"}`,
+            item.summary ? `    Summary  : ${String(item.summary).slice(0,140)}…` : null,
+            ""
+          ].filter(Boolean).join("\n");
+        }).join("\n");
+      } catch (err) {
+        statusEl.textContent = "Error";
+        resultsEl.textContent = "Failed: " + err.message;
+        console.error(err);
+      }
+    }
+
+    document.getElementById("btnLoadDaily").addEventListener("click", () => fetchDaily("/daily"));
+    document.getElementById("btnLoadTrending").addEventListener("click", () => fetchDaily("/trending?hours=24"));
+    document.getElementById("btnLoadStats").addEventListener("click", async () => {
+      const statusEl = document.getElementById("dailyStatus");
+      const resultsEl = document.getElementById("dailyResults");
+      statusEl.textContent = "Loading stats…";
+      try {
+        const res = await fetch(`${INGEST_BASE}/stats`, {
+          headers: { "Authorization": `Bearer ${READ_API_KEY}` }
+        });
+        const data = await res.json();
+        resultsEl.textContent = JSON.stringify(data, null, 2);
+        statusEl.textContent = "OK";
+      } catch (err) {
+        statusEl.textContent = "Error";
+        resultsEl.textContent = err.message;
+      }
+    });
+
+    // Initial runs
+    processCipherBlocks();
+    transposeVertical();
+    runTraversal();
+  </script>
+</body>
+</html>
